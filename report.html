@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>รายงานการเสนอซื้อ - BNCC</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #1e3a8a; --bg: #f1f5f9; }
+        body { font-family: 'Sarabun', sans-serif; background: var(--bg); padding: 20px; }
+        .container { background: white; max-width: 1100px; margin: auto; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        nav { margin-bottom: 20px; text-align: center; }
+        nav a { text-decoration: none; color: var(--primary); font-weight: bold; margin: 0 15px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #e2e8f0; padding: 12px; text-align: left; }
+        th { background: var(--primary); color: white; }
+        tr:nth-child(even) { background: #f8fafc; }
+        .status-loading { text-align: center; padding: 20px; color: #64748b; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <nav>
+        <a href="index.html">📝 หน้าเสนอซื้อ</a>
+        <a href="report.html" style="border-bottom: 2px solid var(--primary);">📊 ดูรายงานทั้งหมด</a>
+    </nav>
+
+    <h1>📊 รายการเสนอซื้อวัสดุฝึกทั้งหมด</h1>
+    <div id="loading" class="status-loading">กำลังโหลดข้อมูลจาก Google Sheets...</div>
+    
+    <table id="data-table" style="display:none;">
+        <thead>
+            <tr>
+                <th>วันที่</th>
+                <th>ชื่อครู</th>
+                <th>รหัสวิชา</th>
+                <th>รายการวัสดุ</th>
+                <th>จำนวน</th>
+                <th>ราคา</th>
+                <th>รวมเงิน</th>
+            </tr>
+        </thead>
+        <tbody id="table-body">
+            </tbody>
+    </table>
+</div>
+
+<script>
+    // ใช้ URL เว็บแอปตัวเดิมที่คุณได้มา (ที่ลงท้ายด้วย /exec)
+    const SCRIPT_URL = "ใส่_URL_เว็บแอปของคุณตรงนี้"; 
+
+    async function loadData() {
+        try {
+            // ดึงข้อมูลโดยส่งพารามิเตอร์ไปบอกสคริปต์ว่าเราต้องการ "อ่าน"
+            const response = await fetch(SCRIPT_URL + "?action=read");
+            const data = await response.json();
+            
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = '';
+            
+            data.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${row.date}</td>
+                    <td>${row.teacher}</td>
+                    <td>${row.subjectCode}</td>
+                    <td>${row.itemName}</td>
+                    <td>${row.qty}</td>
+                    <td>${row.price}</td>
+                    <td>${row.total}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('data-table').style.display = 'table';
+        } catch (error) {
+            document.getElementById('loading').innerText = 'เกิดข้อผิดพลาดในการโหลดข้อมูล';
+            console.error(error);
+        }
+    }
+
+    loadData();
+</script>
+
+</body>
+</html>
