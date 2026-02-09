@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>ระบบบันทึกเสนอซื้อวัสดุฝึก</title>
+    <style>
+        :root { --primary-color: #1e3a8a; --accent-color: #ef4444; }
+        body { font-family: 'Sarabun', sans-serif; background-color: #f8fafc; padding: 40px; }
+        .form-card { background: white; max-width: 950px; margin: auto; padding: 40px; border-radius: 10px; border-top: 8px solid var(--primary-color); box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 { color: var(--primary-color); margin-bottom: 5px; }
+        .grid-info { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 15px; margin-bottom: 25px; }
+        .input-group { display: flex; flex-direction: column; }
+        label { font-weight: 600; margin-bottom: 5px; color: #334155; }
+        input { padding: 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 15px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th { background: #f1f5f9; color: var(--primary-color); padding: 15px; text-align: left; border-bottom: 2px solid #cbd5e1; }
+        td { padding: 10px; border-bottom: 1px solid #e2e8f0; }
+        .total-section { background: #f8fafc; padding: 20px; margin-top: 20px; border-radius: 8px; text-align: right; }
+        .grand-total { font-size: 24px; color: var(--accent-color); font-weight: bold; }
+        .btn-add { background: #64748b; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; margin-top: 15px; }
+        .btn-submit { background: var(--primary-color); color: white; border: none; width: 100%; padding: 18px; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 30px; transition: 0.3s; }
+        .btn-submit:hover { background: #172554; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+    </style>
+</head>
+<body>
+
+<div class="form-card">
+    <div class="header">
+        <h1>ใบบันทึกรายการเสนอซื้อวัสดุฝึก</h1>
+        <p>ระบุรายละเอียดวัสดุที่ต้องการจัดซื้อเพื่อใช้ในการเรียนการสอน</p>
+    </div>
+
+    <div class="grid-info">
+        <div class="input-group">
+            <label>ชื่อครูผู้สอน / ผู้เบิก</label>
+            <input type="text" placeholder="ระบุชื่อ-นามสกุล">
+        </div>
+        <div class="input-group">
+            <label>รหัสวิชา</label>
+            <input type="text" placeholder="3XXXX-XXXX">
+        </div>
+        <div class="input-group">
+            <label>จำนวนนักเรียน (คน)</label>
+            <input type="number" value="1">
+        </div>
+    </div>
+
+    <div class="grid-info" style="grid-template-columns: 2fr 2fr;">
+        <div class="input-group">
+            <label>ชื่อวิชา</label>
+            <input type="text" placeholder="ชื่อรายวิชา">
+        </div>
+        <div class="input-group">
+            <label>ห้องเรียน / แผนก</label>
+            <input type="text" placeholder="ระบุห้องที่ใช้ฝึก">
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>รายการวัสดุฝึกที่เสนอซื้อ</th>
+                <th width="120">จำนวน</th>
+                <th width="150">ราคาต่อหน่วย</th>
+                <th width="150">ราคารวม (บาท)</th>
+            </tr>
+        </thead>
+        <tbody id="purchase-items">
+            <tr>
+                <td><input type="text" style="width:95%" placeholder="เช่น ดอกสว่าน, น้ำมันเครื่อง"></td>
+                <td><input type="number" class="qty" value="1" oninput="calculate()"></td>
+                <td><input type="number" class="price" value="0.00" oninput="calculate()"></td>
+                <td><input type="text" class="row-total" value="0.00" readonly style="background:#f1f5f9; border:none; text-align:right; font-weight:bold;"></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <button type="button" class="btn-add" onclick="addRow()">+ เพิ่มรายการวัสดุ</button>
+
+    <div class="total-section">
+        <span>ประมาณการงบประมาณจัดซื้อรวมทั้งสิ้น:</span>
+        <div class="grand-total"><span id="total-amount">0.00</span> บาท</div>
+    </div>
+
+    <button type="submit" class="btn-submit">✅ บันทึกรายการเสนอซื้อ</button>
+</div>
+
+<script>
+    function addRow() {
+        const table = document.getElementById('purchase-items');
+        const row = `<tr>
+            <td><input type="text" style="width:95%" placeholder="ระบุชื่อวัสดุ"></td>
+            <td><input type="number" class="qty" value="1" oninput="calculate()"></td>
+            <td><input type="number" class="price" value="0.00" oninput="calculate()"></td>
+            <td><input type="text" class="row-total" value="0.00" readonly style="background:#f1f5f9; border:none; text-align:right; font-weight:bold;"></td>
+        </tr>`;
+        table.insertAdjacentHTML('beforeend', row);
+    }
+
+    function calculate() {
+        let grandTotal = 0;
+        const rows = document.querySelectorAll('#purchase-items tr');
+        rows.forEach(row => {
+            const qty = parseFloat(row.querySelector('.qty').value) || 0;
+            const price = parseFloat(row.querySelector('.price').value) || 0;
+            const rowTotal = qty * price;
+            row.querySelector('.row-total').value = rowTotal.toLocaleString(undefined, {minimumFractionDigits: 2});
+            grandTotal += rowTotal;
+        });
+        document.getElementById('total-amount').innerText = grandTotal.toLocaleString(undefined, {minimumFractionDigits: 2});
+    }
+</script>
+
+</body>
+</html>
