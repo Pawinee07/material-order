@@ -47,7 +47,7 @@
 
 <script>
     // ใช้ URL เว็บแอปตัวเดิมที่คุณได้มา (ที่ลงท้ายด้วย /exec)
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzBtFBMb-TQNwcmBVLheztYXFWfJj2OgR9XTeR7DX7TQBh58We_gGMgvq0oAgWUF7Ai/exec"; 
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbypfZYSBEohyMHvrwSVxnHVixZ6ZNOKyBodrCBIuc1JxlnXsFbeCY401t4OeXm1osbk/exec"; 
 
     async function loadData() {
         try {
@@ -79,6 +79,18 @@
             console.error(error);
         }
     }
+<div class="container">
+    <nav style="margin-bottom: 20px;">
+        <a href="index.html" style="text-decoration: none; color: #1e3a8a; font-weight: bold;">⬅️ กลับหน้าเสนอซื้อ (User)</a>
+    </nav>
+    
+    <h1 style="color: #1e3a8a;">📊 ระบบจัดการข้อมูล (Admin Dashboard)</h1>
+    <p>รายการวัสดุฝึกที่ถูกเสนอซื้อเข้ามาทั้งหมด</p>
+    
+    <table id="data-table">
+        ...
+    </table>
+</div>
 
     loadData();
 </script>
