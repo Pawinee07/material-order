@@ -109,6 +109,59 @@
         document.getElementById('grand-total').innerText = total.toLocaleString(undefined, {minimumFractionDigits: 2}) + ' บาท';
     }
 </script>
+(// 1. ก๊อปปี้ URL เว็บแอปสีฟ้าๆ ที่ได้หลังจากกด Continue ในรูปที่ 17 มาวางตรงนี้
+const SCRIPT_URL = "วาง_URL_เว็บแอปของคุณที่นี่"; 
+
+async function submitData() {
+    // แสดงสถานะกำลังส่ง
+    const btn = document.querySelector('.btn-submit');
+    const originalText = btn.innerText;
+    btn.innerText = "กำลังส่งข้อมูล...";
+    btn.disabled = true;
+
+    // รวบรวมข้อมูลจากหน้าเว็บ
+    const data = {
+        date: document.getElementById('currentDate').value,
+        teacher: document.querySelector('input[placeholder="ระบุชื่อ-นามสกุล"]').value,
+        subjectCode: document.querySelector('input[placeholder="3XXXX-XXXX"]').value,
+        subjectName: document.querySelector('input[placeholder="ระบุชื่อวิชา"]').value,
+        items: []
+    };
+
+    // ดึงข้อมูลรายการวัสดุจากตาราง
+    document.querySelectorAll('#items-body tr').forEach(row => {
+        const nameInput = row.querySelector('input[type="text"]');
+        if (nameInput && nameInput.value) {
+            data.items.push({
+                name: nameInput.value,
+                qty: row.querySelector('.qty').value,
+                price: row.querySelector('.price').value,
+                total: (row.querySelector('.qty').value * row.querySelector('.price').value).toFixed(2)
+            });
+        }
+    });
+
+    try {
+        // ส่งข้อมูลไปที่ Google Sheets
+        await fetch(SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors', // สำคัญ: เพื่อให้ส่งข้ามโดเมนจาก GitHub ไป Google ได้
+            cache: 'no-cache',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+
+        alert('🚀 บันทึกข้อมูลลง Google Sheets เรียบร้อยแล้ว!');
+        location.reload(); // ล้างหน้าจอเพื่อเริ่มใบใหม่
+    } catch (error) {
+        alert('เกิดข้อผิดพลาด: ' + error.message);
+    } finally {
+        btn.innerText = originalText;
+        btn.disabled = false;
+    }
+}
+);
+
 
 </body>
 </html>
