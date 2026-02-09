@@ -61,7 +61,7 @@
             data.forEach(row => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td>${row.date}</td>
+                    <td>${new Date(row.date).toLocaleDateString('th-TH')}</td>
                     <td>${row.teacher}</td>
                     <td>${row.subjectCode}</td>
                     <td>${row.itemName}</td>
